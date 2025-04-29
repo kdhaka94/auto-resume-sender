@@ -18,6 +18,7 @@
   },
   "scripts": {
     "dev": "bun run index.ts",
+    "dev:netlify": "netlify dev",
     "build": "bun build ./index.ts --target=node --outdir=dist",
     "generate": "prisma generate",
     "postinstall": "prisma generate",
@@ -26,6 +27,7 @@
   "type": "module",
   "devDependencies": {
     "@types/bun": "^1.2.11",
-    "@netlify/functions": "^3.1.2"
+    "@netlify/functions": "^3.1.2",
+    "netlify-cli": "^17.19.4"
   }
 }
