@@ -7,6 +7,11 @@
   node_bundler = "esbuild"
 
 [[redirects]]
+  from = "/track/*"
+  to = "/.netlify/functions/api/track/:splat"
+  status = 200
+
+[[redirects]]
   from = "/sent-emails"
   to = "/.netlify/functions/api/sent-emails"
   status = 200
@@ -14,16 +19,6 @@
 [[redirects]]
   from = "/send-resume"
   to = "/.netlify/functions/api/send-resume"
-  status = 200
-
-[[redirects]]
-  from = "/dashboard"
-  to = "/.netlify/functions/api/dashboard"
-  status = 200
-
-[[redirects]]
-  from = "/tinder"
-  to = "/.netlify/functions/api/tinder"
   status = 200
 
 [[redirects]]
@@ -39,6 +34,16 @@
 [[redirects]]
   from = "/oauth2callback"
   to = "/.netlify/functions/api/oauth2callback"
+  status = 200
+
+[[redirects]]
+  from = "/dashboard"
+  to = "/.netlify/functions/api/dashboard"
+  status = 200
+
+[[redirects]]
+  from = "/tinder"
+  to = "/.netlify/functions/api/tinder"
   status = 200
 
 [[redirects]]

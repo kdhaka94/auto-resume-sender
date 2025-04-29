@@ -1,7 +1,7 @@
 import express from "express";
 import { GeminiService } from "./services/gemini";
 import { sendMail, getAuthUrl, setTokensFromCode } from "./services/mailer.ts";
-import { logSentEmail, getSentEmails, prisma } from "./db";
+import { logSentEmail, getSentEmails, prisma, addViewedTimestamp } from "./db";
 import path from "path";
 import fs from "fs/promises";
 import dotenv from "dotenv";
@@ -61,6 +61,27 @@ app.get("/oauth2callback", async (req, res) => {
   }
 });
 
+// Tracking pixel endpoint
+app.get("/track/:emailId", async (req, res) => {
+    const { emailId } = req.params;
+    
+    try {
+      await addViewedTimestamp(parseInt(emailId));
+      
+      // Return a 1x1 transparent GIF
+      const pixel = Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64');
+      res.setHeader('Content-Type', 'image/gif');
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.send(pixel);
+    } catch (err) {
+      console.error('Tracking error:', err);
+      // Still return pixel to avoid errors in email client
+      const pixel = Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64');
+      res.setHeader('Content-Type', 'image/gif');
+      res.send(pixel);
+    }
+  });
+  
 // POST /send-resume
 app.post("/send-resume", async (req, res) => {
   const { email, postContent } = req.body;
@@ -80,11 +101,12 @@ app.post("/send-resume", async (req, res) => {
     return res.json({ success: false, jobType, status });
   }
   try {
-    await logSentEmail(email, postContent, status);
+    const savedEmail = await logSentEmail(email, postContent, status);
     if (status === "SENT") {
       await sendMail({
         to: email,
         attachments: resumePath ? [{ path: resumePath }] : [],
+        emailId: savedEmail.id
       });
     }
     res.json({ success: true, jobType, status });
@@ -159,7 +181,7 @@ app.get('/tinder', async (req, res) => {
   res.send(html);
 });
 
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`API server running on http://localhost:${PORT}`);
-});
+// const PORT = process.env.PORT || 3001;
+// app.listen(PORT, () => {
+//   console.log(`API server running on http://localhost:${PORT}`);
+// });

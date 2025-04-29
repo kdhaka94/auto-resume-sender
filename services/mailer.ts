@@ -7,6 +7,7 @@ const CLIENT_SECRET = process.env.GMAIL_CLIENT_SECRET!;
 const REDIRECT_URI = process.env.GMAIL_REDIRECT_URI! || 'http://localhost:3001/oauth2callback'; // e.g. http://localhost:3001/oauth2callback
 const REFRESH_TOKEN = process.env.GMAIL_REFRESH_TOKEN; // Set after first auth
 const USER_EMAIL = process.env.GMAIL_USER! || 'kdhaka94@gmail.com';
+const BASE_URL = process.env.BASE_URL || 'http://localhost:8888';
 
 const SUBJECTS = [
     "Your Next Star Engineer's Resume—Open to See Why",
@@ -48,9 +49,10 @@ export async function setTokensFromCode(code: string) {
   return tokens;
 }
 
-export async function sendMail({ to, attachments = [] }: {
+export async function sendMail({ to, attachments = [], emailId }: {
   to: string,
   attachments?: any[],
+  emailId: number
 }) {
   // Get a fresh access token
   const { token } = await oAuth2Client.getAccessToken();
@@ -65,30 +67,40 @@ export async function sendMail({ to, attachments = [] }: {
       accessToken: token as string,
     },
   });
+
+  const trackingPixel = `<img src="${BASE_URL}/track/${emailId}" width="1" height="1" />`;
+  
   return transporter.sendMail({
     from: USER_EMAIL,
     to,
     subject: getRandomSubject(),
-    text: `Hi, I saw your post on linkedin, about job opening, I'll keep this short.
-
-I am Kuldeep. MockQL is my most impressive project
-https://mockql.com/ 
-In short, unlike other mocking tool it lets you extend your backend to have mock api no separate server need. 
-
-With this I have also worked with several high profile clients like Sysco, Ulta Beauty, Kisaan etc. 
-https://www.ulta.com/
-https://www.sysco.com/
-https://kisaan.com.au/
-
-Apart from this you can find a bunch in my resume and github like
-node-shred - https://github.com/kdhaka94/node-shred
-Yolo - https://github.com/kdhaka94/yolo
-
-
-Portfolio : https://kuldeep-portfolio.web.app/
-
-Regards,
-Kuldeep`,
+    html: `
+      <div>
+        <p>Hi, I saw your post on LinkedIn about the job opening. I'll keep this short.</p>
+        
+        <p>I am Kuldeep. MockQL is my most impressive project<br/>
+        <a href="https://mockql.com/">https://mockql.com/</a><br/>
+        In short, unlike other mocking tools, it lets you extend your backend to have mock API with no separate server needed.</p>
+        
+        <p>With this, I have also worked with several high-profile clients like Sysco, Ulta Beauty, Kisaan etc.</p>
+        <ul>
+          <li><a href="https://www.ulta.com/">https://www.ulta.com/</a></li>
+          <li><a href="https://www.sysco.com/">https://www.sysco.com/</a></li>
+          <li><a href="https://kisaan.com.au/">https://kisaan.com.au/</a></li>
+        </ul>
+        
+        <p>Apart from this, you can find more in my resume and GitHub:</p>
+        <ul>
+          <li>node-shred - <a href="https://github.com/kdhaka94/node-shred">https://github.com/kdhaka94/node-shred</a></li>
+          <li>Yolo - <a href="https://github.com/kdhaka94/yolo">https://github.com/kdhaka94/yolo</a></li>
+        </ul>
+        
+        <p>Portfolio: <a href="https://kuldeep-portfolio.web.app/">https://kuldeep-portfolio.web.app/</a></p>
+        
+        <p>Regards,<br/>Kuldeep</p>
+        ${trackingPixel}
+      </div>
+    `,
     attachments,
   });
 }
