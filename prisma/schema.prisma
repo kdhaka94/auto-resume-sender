@@ -1,0 +1,23 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model SentEmail {
+  id          Int       @id @default(autoincrement())
+  email       String
+  postContent String    @db.Text
+  status      String    // SENT, AWAITING_CONFIRMATION, REJECTED, ALREADY_SENT
+  jobType     String?   // remote, onsite, etc.
+  sent_at     DateTime  @default(now())
+  viewed_at   DateTime[] // Array of timestamps when email was viewed
+  
+  @@map("sent_emails") // Keep the table name consistent with previous
+} 

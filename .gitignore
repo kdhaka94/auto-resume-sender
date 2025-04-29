@@ -1,0 +1,4 @@
+resumes/ 
+node_modules
+.env
+emails.db
