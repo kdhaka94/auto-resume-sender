@@ -147,6 +147,7 @@
           <th>Status</th>
           <th>Post Content</th>
           <th>Sent At</th>
+          <th>Views</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -214,6 +215,13 @@
           </td>
           <td>
             ${email.sent_at ? new Date(email.sent_at).toLocaleString() : ''}
+          </td>
+          <td>
+            ${email.viewed_at ? `
+              <span title="${email.viewed_at.map(t => new Date(t).toLocaleString()).join('\n')}">
+                ${email.viewed_at.length} view${email.viewed_at.length === 1 ? '' : 's'}
+              </span>
+            ` : '0 views'}
           </td>
           <td class="actions">
             ${email.status === 'AWAITING_CONFIRMATION' ? `

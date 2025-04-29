@@ -86,8 +86,7 @@ app.get("/track/:emailId", async (req, res) => {
 app.post("/send-resume", async (req, res) => {
   const { email, postContent } = req.body;
   // Look for resume file in resumes/ folder
-  let resumePath;
-  resumePath = path.join(process.cwd(), "resumes", "Kuldeep_Resume.pdf");
+  const resumePath = path.join(process.cwd(), "public", "resumes", "Kuldeep_Resume.pdf");
   try {
     await fs.access(resumePath);
   } catch {
